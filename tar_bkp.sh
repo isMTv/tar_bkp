@@ -16,7 +16,7 @@ while getopts ":bexzmp:c:d:r:k:u:j:i:h" opt; do
         u) db_user="${OPTARG}" ;; # <user> dbuser
         j) db_pass="${OPTARG}" ;; # <pass> dbpass
         i) db_name="${OPTARG}" ;; # <name> dbname
-        h) echo -e "\nUsage:\n tar_bkp.sh -e -p box or -ez -k pass\n tar_bkp.sh -b -p box -c 5 -d /path/directory/ -r g-disk or -bx -k pass\n\nOptions:\n "-b", create backup\n "-e", extract backup\n "-x", encrypt backup\n "-z", decrypt backup\n "-m", create database backup\p "-p", <argument> project name\n "-c", <argument> count backup\n "-d", <argument> source dir to backup\n "-r", <argument> remote rclone cloud or dir\n "-k", <argument> pass for crypt or decrypt backup\n "-u", <argument> dbuser\n "-j", <argument> dbpass\n "-i", <argument> dbname\n "-h", display this help\n" ;;
+        h) echo -e "\nUsage:\n tar_bkp.sh -e -p box or -ez -k pass\n tar_bkp.sh -b -p box -c 5 -d /path/directory/ -r g-disk or -bx -k pass\n\nOptions:\n "-b", create backup\n "-e", extract backup\n "-x", encrypt backup\n "-z", decrypt backup\n "-m", create database backup\n "-p", <argument> project name\n "-c", <argument> count backup\n "-d", <argument> source dir to backup\n "-r", <argument> remote rclone cloud or dir\n "-k", <argument> pass for crypt or decrypt backup\n "-u", <argument> dbuser\n "-j", <argument> dbpass\n "-i", <argument> dbname\n "-h", display this help\n" ;;
         \?) echo " - Invalid option: -${OPTARG}." ; exit 1 ;;
         :) echo " - Option -${OPTARG} requires an argument." ; exit 2 ;;
     esac
