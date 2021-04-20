@@ -22,3 +22,27 @@
 ```
 # /tar_bkp.sh -ez -k pass -p box 
 ```
+
+## Options help:
+```
+# ./tar_bkp.sh -h
+
+Usage:
+ tar_bkp.sh -e -p box or -ez -k pass
+ tar_bkp.sh -b -p box -c 5 -d /path/directory/ -r g-disk or -bx -k pass
+
+Options:
+ -b, create backup
+ -e, extract backup
+ -x, encrypt backup
+ -z, decrypt backup
+ -m, create database backup\p -p, <argument> project name
+ -c, <argument> count backup
+ -d, <argument> source dir to backup
+ -r, <argument> remote rclone cloud or dir
+ -k, <argument> pass for crypt or decrypt backup
+ -u, <argument> dbuser
+ -j, <argument> dbpass
+ -i, <argument> dbname
+ -h, display this help
+ ```
