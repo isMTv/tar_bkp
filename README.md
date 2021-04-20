@@ -36,7 +36,8 @@ Options:
  -e, extract backup
  -x, encrypt backup
  -z, decrypt backup
- -m, create database backup\p -p, <argument> project name
+ -m, create database backup
+ -p, <argument> project name
  -c, <argument> count backup
  -d, <argument> source dir to backup
  -r, <argument> remote rclone cloud or dir
