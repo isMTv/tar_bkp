@@ -1,4 +1,10 @@
 ## Overview:
-Simmple incremental backup script for linux server's using rclone. It is possible to backup MySQL database. Before the backup, the script will check the hash-sum, and if there have been changes, it will make a new backup and synchronize it with the remote storage. 
+Simmple tar incremental backup script for linux server's using rclone. It is possible to backup MySQL database.
+
+Before the backup database, the script will check the hash-sum (sha-1), and if there have been changes, it will make a new backup and synchronize it with the remote storage.
+
+Interaction with the script occurs only through passing flags and arguments; you do not need to edit the variables in the script body.
+
+It is possible to encrypt the backup before sending it to the remote storage using openssl aes-256-cbc.
 
 ## How-to:
