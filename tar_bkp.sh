@@ -56,19 +56,20 @@ create_db_bkp () {
     while [ "$opt_m" = "true" ]; do
         while [[ -z "$db_user" || -z "$db_pass" || -z "$db_name" ]]; do echo " - [@create_db_bkp] Error, requared option's "-u, -j, -i"" ; exit 1 ; done
         cd "${source}" || exit 1
-        local name_bkp="${project}-${curdate}.sql.gz.sha1"
-        db_bkp="${source}/db_bkp" ; if [ ! -e "$db_bkp" ]; then mkdir -p "$db_bkp" ; chmod u=rw,go= "$db_bkp" ; fi
+        db_bkp="db_bkp" ; if [ ! -e "$db_bkp" ]; then mkdir -p "$db_bkp" ; chmod u=rw,go= "$db_bkp" ; fi
         db_hash="$(mysqldump -u "${db_user}" -p"${db_pass}" "${db_name}" | gzip > /dev/null | sha1sum | awk '{print $1}')"
         bkp_hash="$(cat "${db_bkp}"/"${project}"-*.sql.gz.sha1 2> /dev/null)"
         if [ "$db_hash" != "$bkp_hash" ]; then
+            local name_bkp="${project}-${curdate}.sql.gz.sha1"
             rm -f "${db_bkp}"/"${project}"-*.sql.gz*
             mysqldump -u "${db_user}" -p"${db_pass}" "${db_name}" | gzip > "${db_bkp}"/"${name_bkp::-5}" | sha1sum | awk '{print $1}' > "${db_bkp}"/"${name_bkp}" || exit 1 ; status_cdb="$?"
             local size_bkp="$(du -sh "${db_bkp}"/"${name_bkp::-5}" | awk '{print $1}')"
             if [ "$status_cdb" = "0" ] ; then logger "[+] [@create_db_bkp] Резервная копия (${name_bkp::-5}) создана [$size_bkp]." ; fi
             break
         else
+            local name_bkp="$(find "${db_bkp}"/ -maxdepth 1 -name "${project}"-*.sql.gz | sed 's,'${db_bkp}'/,,')"
             local size_bkp="$(du -sh "${db_bkp}"/"${project}"-*.sql.gz | awk '{print $1}')"
-            logger "[-] [@create_db_bkp] В резервной копии (${name_bkp::-5}) изменений не обнаружено [$size_bkp]."
+            logger "[-] [@create_db_bkp] В резервной копии (${name_bkp}) изменений не обнаружено [$size_bkp]."
             break
         fi
     done
