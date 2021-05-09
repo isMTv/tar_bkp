@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # required applications: tar, rclone and openssl
+# db_hash="$(... -type f \( ! -name "access_tokens.ibd" ! -name "users.ibd" \) ...)" can be added to exclude changing tables
 #
 while getopts ":bexzmp:c:d:r:k:u:j:i:h" opt; do
     case $opt in
@@ -57,12 +58,13 @@ create_db_bkp () {
         while [[ -z "$db_user" || -z "$db_pass" || -z "$db_name" ]]; do echo " - [@create_db_bkp] Error, requared option's "-u, -j, -i"" ; exit 1 ; done
         cd "${source}" || exit 1
         db_bkp="db_bkp" ; if [ ! -e "$db_bkp" ]; then mkdir -p "$db_bkp" ; chmod u=rw,go= "$db_bkp" ; fi
-        db_hash="$(mysqldump -u "${db_user}" -p"${db_pass}" "${db_name}" | gzip > /dev/null | sha1sum | awk '{print $1}')"
+        db_hash="$(find /var/lib/mysql/"${db_name}"/ -type f -print0 | xargs -0 sha1sum | cut -b-40 | sort | sha1sum | awk '{print $1}')"
         bkp_hash="$(cat "${db_bkp}"/"${project}"-*.sql.gz.sha1 2> /dev/null)"
         if [ "$db_hash" != "$bkp_hash" ]; then
             local name_bkp="${project}-${curdate}.sql.gz.sha1"
             rm -f "${db_bkp}"/"${project}"-*.sql.gz*
-            mysqldump -u "${db_user}" -p"${db_pass}" "${db_name}" | gzip > "${db_bkp}"/"${name_bkp::-5}" | sha1sum | awk '{print $1}' > "${db_bkp}"/"${name_bkp}" || exit 1 ; status_cdb="$?"
+            mysqldump -u "${db_user}" -p"${db_pass}" "${db_name}" | gzip > "${db_bkp}"/"${name_bkp::-5}" || exit 1 ; status_cdb="$?"
+            echo "$db_hash" > "${db_bkp}"/"${name_bkp}"
             local size_bkp="$(du -sh "${db_bkp}"/"${name_bkp::-5}" | awk '{print $1}')"
             if [ "$status_cdb" = "0" ] ; then logger "[+] [@create_db_bkp] Резервная копия (${name_bkp::-5}) создана [$size_bkp]." ; fi
             break
