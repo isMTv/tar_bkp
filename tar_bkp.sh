@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # required applications: tar, rclone and openssl
-# db_hash="$(... -type f \( ! -name "access_tokens.ibd" ! -name "users.ibd" \) ...)" can be added to exclude changing tables
+# can be added to exclude changing db tables: db_hash="$(... -type f \( ! -name "access_tokens.ibd" ! -name "users.ibd" \) ...)"
 #
 while getopts ":bexzmp:c:d:r:k:u:j:i:h" opt; do
     case $opt in
