@@ -58,7 +58,7 @@ create_db_bkp () {
         while [[ -z "$db_user" || -z "$db_pass" || -z "$db_name" ]]; do echo " - [@create_db_bkp] Error, requared option's "-u, -j, -i"" ; exit 1 ; done
         cd "${source}" || exit 1
         db_bkp="db_bkp" ; if [ ! -e "$db_bkp" ]; then mkdir -p "$db_bkp" ; chmod u=rw,go= "$db_bkp" ; fi
-        db_hash="$(find /var/lib/mysql/"${db_name}"/ -type f -print0 | xargs -0 sha1sum | cut -b-40 | sort | sha1sum | awk '{print $1}')"
+        db_hash="$(find /var/lib/mysql/"${db_name}"/*.ibd -type f -print0 | xargs -0 sha1sum | cut -b-40 | sort | sha1sum | awk '{print $1}')"
         bkp_hash="$(cat "${db_bkp}"/"${project}"-*.sql.gz.sha1 2> /dev/null)"
         if [ "$db_hash" != "$bkp_hash" ]; then
             local name_bkp="${project}-${curdate}.sql.gz.sha1"
