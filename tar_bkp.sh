@@ -22,7 +22,7 @@ while getopts ":bexzmp:c:d:r:k:u:j:i:h" opt; do
         :) echo " - Option -${OPTARG} requires an argument." ; exit 2 ;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 # - #
 script_dir="$(dirname "$(readlink -f "$0")")"
 dest="${script_dir}/backup/$project"
@@ -36,7 +36,7 @@ function logger() {
     while [ -z "$project" ]; do echo " - [@logger] Error, requared option "-p"" ; exit 1 ; done
     if [ ! -e "${dest}" ]; then mkdir -p "${dest}" ; fi
     find "${dest}"/../ -maxdepth 1 -name "*.log" -size +10k -exec rm -f {} \;
-    echo -e "["`date "+%H:%M:%S"`"]: $1" >> "${dest}"/../"${project}.log"
+    echo -e "[$(date "+%H:%M:%S")]: $1" >> "${dest}"/../"${project}.log"
 }
 
 # Cleaning old backups;
@@ -45,8 +45,9 @@ remove_bkp () {
     cur_bkp="$(find "${dest}" -name "*.tar.gz*" 2> /dev/null | wc -l)"
     local size_bkp="$(du -sh "${dest}" | awk '{print $1}')"
     if [ "$cur_bkp" -ge "$count_bkp" ]; then
-        rm -f "${dest}"/*.tar.gz* "${dest}"/../"${project}".snar
-        if [ "$?" = "0" ] ; then logger "[+] [@remove_bkp] Очищено старых резервных копий [$cur_bkp/$count_bkp/$size_bkp]." ; fi
+        if rm -f "${dest}"/*.tar.gz* "${dest}"/../"${project}".snar; then
+            logger "[+] [@remove_bkp] Очищено старых резервных копий [$cur_bkp/$count_bkp/$size_bkp]."
+        fi
     else
         logger "[-] [@remove_bkp] Не обнаружено резервных копий требующих очистки [$cur_bkp/$count_bkp/$size_bkp]."
     fi
@@ -98,11 +99,10 @@ create_bkp () {
 # Sync backup witch remote storage;
 sync_bkp () {
     while [ -z "$remote" ]; do echo " - [@sync_bkp] Error, requared option "-r"" ; exit 1 ; done
-    else_err_sb="$(rclone sync -q "${dest}" "$drive_dir"/ 2>&1)"
-    if [ "$?" = "0" ]; then
+    if else_err_sb="$(rclone sync -q "${dest}" "$drive_dir"/ 2>&1)"; then
         logger "[+] [@sync_bkp] Синхронизация с хранилищем ($drive_dir) выполнена."
     else
-        logger "[-] [@sync_bkp] Ошибка - ${else_err_sb}.\n"
+        logger "[!] [@sync_bkp] Ошибка - ${else_err_sb}.\n"
         exit 1
     fi
 }
@@ -116,13 +116,19 @@ extract_bkp () {
     if [ "$opt_z" = "true" ]; then
         while [ -z "$crypt_pass" ]; do echo " - [@extract_bkp] Error, requared option "-k"" ; exit 1 ; done
         for bkp in $bkps; do
-            openssl enc -d -aes-256-cbc -pbkdf2 -k "${crypt_pass}" -in "${dest}"/"$bkp" | tar -xpz -g /dev/null -C "${extract}" --numeric-owner
-            if [ "$?" = "0" ] ; then logger "[+] [@extract_bkp] Распаковка ($bkp) выполнена." ; fi
+            if else_err_eb="$(openssl enc -d -aes-256-cbc -pbkdf2 -k "${crypt_pass}" -in "${dest}"/"$bkp" | tar -xpz -g /dev/null -C "${extract}" --numeric-owner 2>&1)"; then
+                logger "[+] [@extract_bkp] Распаковка ($bkp) выполнена."
+            else
+                logger "[!] [@extract_bkp] Ошибка - ($bkp) ${else_err_eb}."
+            fi
         done
     else
         for bkp in $bkps; do
-            tar -xpz -g /dev/null -f "${dest}"/"$bkp" -C "${extract}" --numeric-owner
-            if [ "$?" = "0" ] ; then logger "[+] [@extract_bkp] Распаковка ($bkp) выполнена." ; fi
+            if else_err_eb="$(tar -xpz -g /dev/null -f "${dest}"/"$bkp" -C "${extract}" --numeric-owner 2>&1)"; then
+                logger "[+] [@extract_bkp] Распаковка ($bkp) выполнена."
+            else
+                logger "[!] [@extract_bkp] Ошибка - ($bkp) ${else_err_eb}."
+            fi
         done
     fi
 }
