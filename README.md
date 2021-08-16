@@ -1,5 +1,5 @@
 ## Overview:
-* Simple tar incremental backup script for linux server's using rclone. It is possible to backup MySQL database;
+* Simple tar incremental backup script for linux server's using rclone. It is possible to backup MySQL database, as well as split backup;
 * Before the backup database, the script will check the hash-sum (sha-1), and if there have been changes, it will make a new backup and synchronize it with the remote storage;
 * Interaction with the script occurs only through passing flags and arguments, you do not need to edit the variables in the script body;
 * It is possible to encrypt the backup before sending it to the remote storage using openssl aes-256-cbc;
@@ -35,16 +35,21 @@ Usage:
 Options:
  -b, create backup
  -e, extract backup
- -x, encrypt backup
- -z, decrypt backup
+ -x, [opt_b] + encrypt
+ -w, [opt_b] + encrypt + split
+ -q, [opt_b] + split
+ -z, [opt_e] + decrypt
+ -f, [opt_e] + decrypt + split
+ -g, [opt_e] + split
  -m, create database backup
- -p, <argument> project name
- -c, <argument> count backup
- -d, <argument> source dir to backup
- -r, <argument> remote rclone cloud or dir
- -k, <argument> pass for crypt or decrypt backup
- -u, <argument> dbuser
- -j, <argument> dbpass
- -i, <argument> dbname
+ -p, <name> project
+ -c, <count> backup
+ -d, <path> backup
+ -r, <rclone remote> cloud or dir
+ -k, <pass> for crypt or decrypt backup
+ -a, <bytes> K,M,G for split backup
+ -u, <user> dbuser
+ -j, <pass> dbpass
+ -i, <name> dbname
  -h, display this help
  ```
