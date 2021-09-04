@@ -125,10 +125,10 @@ create_bkp () {
 # Sync backup witch remote storage;
 sync_bkp () {
     while [ -z "$remote" ]; do echo " - [@sync_bkp] Error, requared option "-r"" ; exit 1 ; done
-    if else_err_sb="$(rclone sync -q "${dest}" "$drive_dir"/ 2>&1)"; then
+    if if_err_sb="$(rclone sync -q "${dest}" "$drive_dir"/ 2>&1)"; then
         logger "[+] [@sync_bkp] Синхронизация с хранилищем ($drive_dir) выполнена."
     else
-        logger "[!] [@sync_bkp] Ошибка - ${else_err_sb}.\n"
+        logger "[!] [@sync_bkp] Ошибка - ${if_err_sb}.\n"
         exit 1
     fi
 }
@@ -143,38 +143,38 @@ extract_bkp () {
     if [ "$opt_z" = "true" ]; then
         while [ -z "$crypt_pass" ]; do echo " - [@extract_bkp] Error, requared option "-k"" ; exit 1 ; done
         for bkp in $bkps; do
-            if else_err_eb="$(openssl enc -d -aes-256-cbc -pbkdf2 -k "${crypt_pass}" -in "${dest}"/"$bkp" | tar -xpz -g /dev/null -C "${extract}" --numeric-owner 2>&1)"; then
+            if if_err_eb="$(openssl enc -d -aes-256-cbc -pbkdf2 -k "${crypt_pass}" -in "${dest}"/"$bkp" | tar -xpz -g /dev/null -C "${extract}" --numeric-owner 2>&1)"; then
                 logger "[+] [@extract_bkp] Распаковка ($bkp) выполнена."
             else
-                logger "[!] [@extract_bkp] Ошибка - ($bkp) ${else_err_eb}."
+                logger "[!] [@extract_bkp] Ошибка - ($bkp) ${if_err_eb}."
             fi
         done
     # decrypt + split;
     elif [ "$opt_f" = "true" ]; then
         while [ -z "$crypt_pass" ]; do echo " - [@extract_bkp] Error, requared option "-k"" ; exit 1 ; done
         for bkp in $(find "${dest}" -type f -name "*.tar.gz.crypt00" | sort -t'-' -k4 -k3 -k2 -k5 -k6 -k7); do
-            if else_err_eb="$(cat ${bkp::-2}* | openssl enc -d -aes-256-cbc -pbkdf2 -k "${crypt_pass}" | tar -xpz -g /dev/null -C "${extract}" --numeric-owner 2>&1)"; then
+            if if_err_eb="$(cat ${bkp::-2}* | openssl enc -d -aes-256-cbc -pbkdf2 -k "${crypt_pass}" | tar -xpz -g /dev/null -C "${extract}" --numeric-owner 2>&1)"; then
                 logger "[+] [@extract_bkp] Распаковка ($bkp) выполнена."
             else
-                logger "[!] [@extract_bkp] Ошибка - ($bkp) ${else_err_eb}."
+                logger "[!] [@extract_bkp] Ошибка - ($bkp) ${if_err_eb}."
             fi
         done
     # split;
     elif [ "$opt_g" = "true" ]; then
         for bkp in $(find "${dest}" -type f -name "*.tar.gz00" | sort -t'-' -k4 -k3 -k2 -k5 -k6 -k7); do
-            if else_err_eb="$(cat ${bkp::-2}* | tar -xpz -g /dev/null -C "${extract}" --numeric-owner 2>&1)"; then
+            if if_err_eb="$(cat ${bkp::-2}* | tar -xpz -g /dev/null -C "${extract}" --numeric-owner 2>&1)"; then
                 logger "[+] [@extract_bkp] Распаковка ($bkp) выполнена."
             else
-                logger "[!] [@extract_bkp] Ошибка - ($bkp) ${else_err_eb}."
+                logger "[!] [@extract_bkp] Ошибка - ($bkp) ${if_err_eb}."
             fi
         done
     # normal;
     else
         for bkp in $bkps; do
-            if else_err_eb="$(tar -xpz -g /dev/null -f "${dest}"/"$bkp" -C "${extract}" --numeric-owner 2>&1)"; then
+            if if_err_eb="$(tar -xpz -g /dev/null -f "${dest}"/"$bkp" -C "${extract}" --numeric-owner 2>&1)"; then
                 logger "[+] [@extract_bkp] Распаковка ($bkp) выполнена."
             else
-                logger "[!] [@extract_bkp] Ошибка - ($bkp) ${else_err_eb}."
+                logger "[!] [@extract_bkp] Ошибка - ($bkp) ${if_err_eb}."
             fi
         done
     fi
