@@ -22,7 +22,7 @@ while getopts ":bexwqzfgmp:c:d:r:k:a:u:j:i:h" opt; do
         u) db_user="${OPTARG}" ;; # <user> dbuser
         j) db_pass="${OPTARG}" ;; # <pass> dbpass
         i) db_name="${OPTARG}" ;; # <name> dbname
-        h) echo -e "\nUsage:\n tar_bkp.sh -e -p box or -ez -k pass\n tar_bkp.sh -b -p box -c 5 -d /path/directory/ -r g-disk or -bx -k pass\n\nOptions:\n "-b", create backup\n "-e", extract backup\n "-x", [opt_b] + encrypt\n "-w", [opt_b] + encrypt + split\n "-q", [opt_b] + split\n "-z", [opt_e] + decrypt\n "-f", [opt_e] + decrypt + split\n "-g", [opt_e] + split\n "-m", create database backup\n "-p", <name> project\n "-c", <count> backup\n "-d", <path> backup\n "-r", <rclone remote> cloud or dir\n "-k", <pass> for crypt or decrypt backup\n "-a", <bytes> K,M,G for split backup\n "-u", <user> dbuser\n "-j", <pass> dbpass\n "-i", <name> dbname\n "-h", display this help\n" ;;
+        h) echo -e "\nUsage:\n ./tar_bkp.sh -e -p box or -ez -k pass\n ./tar_bkp.sh -b -p box -c 5 -d /path/directory/ -r g-disk or -bx -k pass\n\nOptions:\n "-b", create backup\n "-e", extract backup\n "-x", [opt_b] + encrypt\n "-w", [opt_b] + encrypt + split\n "-q", [opt_b] + split\n "-z", [opt_e] + decrypt\n "-f", [opt_e] + decrypt + split\n "-g", [opt_e] + split\n "-m", create database backup\n "-p", <name> project\n "-c", <count> backup\n "-d", <path> backup\n "-r", <rclone remote> cloud or dir\n "-k", <pass> for crypt or decrypt backup\n "-a", <bytes> K,M,G for split backup\n "-u", <user> dbuser\n "-j", <pass> dbpass\n "-i", <name> dbname\n "-h", display this help\n" ;;
         \?) echo " - Invalid option: -${OPTARG}." ; exit 1 ;;
         :) echo " - Option -${OPTARG} requires an argument." ; exit 2 ;;
     esac
